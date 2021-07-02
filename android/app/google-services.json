@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "62250446574",
+    "project_id": "newdiary-4233b",
+    "storage_bucket": "newdiary-4233b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:62250446574:android:bcd89a678c822e5cc24dff",
+        "android_client_info": {
+          "package_name": "com.example.new_diary"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "62250446574-j3h68ejeqfdl0s995f154agk725mokg6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBy1Ou_KEvJDkwRVwpHKe6vBFk2oSvJ3fQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "62250446574-j3h68ejeqfdl0s995f154agk725mokg6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
