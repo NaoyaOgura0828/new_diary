@@ -129,4 +129,18 @@ class _AuthyState extends State<Authy> {
 }
 
 
+class DiaryModel extends StatelessWidget {
+  /* 日記のモデル */
+  String titletext = ''; // タイトル
+  String bodytext = ''; // 本文
+  File? image; // 画像
+  String createtime = DateTime.now().toLocal().toIso8601String(); // 制作日
+  String uid = ''; // ユーザーID
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+}
+
 
