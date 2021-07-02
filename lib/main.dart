@@ -1,12 +1,19 @@
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+
+
+final countProvider = StateProvider((ref) {
+  return 0;
+});
+
 
 
 void main() async {
@@ -182,6 +189,15 @@ class _DiaryListState extends State<DiaryList> {
 
       body: SingleChildScrollView(
         padding: EdgeInsets.all(8.0),
+        child: Column(
+          children: <Widget>[
+            Container(
+        decoration: BoxDecoration(border: Border.all(
+        color: Colors.red,
+          width: 20.0,))
+            )
+          ],
+        ),
 
       ),
     );
