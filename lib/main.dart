@@ -57,7 +57,7 @@ class _AuthyState extends State<Authy> {
                 decoration: InputDecoration(labelText: 'メールアドレス'),
                 onChanged: (String value) {
                   setState(() {
-                    email = value;
+                    email = value; // emailにアドレスを代入
                   });
                 },
               ),
@@ -67,7 +67,7 @@ class _AuthyState extends State<Authy> {
                 decoration: InputDecoration(labelText: 'パスワード'),
                 onChanged: (String value) {
                   setState(() {
-                    password = value;
+                    password = value; // passwordにパスワードを代入
                   });
                 },
               ),
@@ -82,6 +82,7 @@ class _AuthyState extends State<Authy> {
                   onPressed: () async {
                     final FirebaseAuth auth = FirebaseAuth.instance;
                     await auth.createUserWithEmailAndPassword(
+                      /* emailとpasswordでユーザー登録する */
                         email: email,
                         password: password,
                     );
@@ -106,6 +107,7 @@ class _AuthyState extends State<Authy> {
                     onPressed: () async {
                       final FirebaseAuth auth = FirebaseAuth.instance;
                       await auth.signInWithEmailAndPassword(
+                        /* emailとpasswordでユーザー認証する */
                           email: email,
                           password: password,
                       );
