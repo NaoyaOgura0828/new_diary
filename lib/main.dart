@@ -72,6 +72,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
+
+/* TODO:新規登録失敗or認証失敗でのstack回避 */
 class Authy extends StatefulWidget {
   /* 認証機能 */
   @override
@@ -178,7 +180,7 @@ class DiaryModel extends StatelessWidget {
   }
 }
 
-// TODO: class DiaryCreateの作成
+/* TODO: 画像をカメラロールから読み込めるようにする */
 class DiaryCreate extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ScopedReader watch) {
@@ -275,11 +277,11 @@ class DiaryCreate extends ConsumerWidget {
 }
 
 
+/* TODO:画像を読み込むようにする。レイアウトを整える */
 class DiaryDetail extends ConsumerWidget {
   /* 日記内容 */
   @override
   Widget build(BuildContext context, ScopedReader watch) {
-    final User user = watch(userProvider).state!;
     final AsyncValue<QuerySnapshot> asyncPostsQuery = watch(postsQueryProvider);
 
     return Scaffold(
