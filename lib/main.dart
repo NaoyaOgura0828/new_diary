@@ -207,7 +207,9 @@ class DiaryCreate extends ConsumerWidget {
 
               /* Providerから日記タイトルを更新 */
               onChanged: (String value) {
-                context.read(titleTextProvider).state = value;
+                context
+                    .read(titleTextProvider)
+                    .state = value;
               },
             ),
             const SizedBox(
@@ -225,7 +227,9 @@ class DiaryCreate extends ConsumerWidget {
 
               /* Providerから本文を更新 */
               onChanged: (String value) {
-                context.read(bodyTextProvider).state = value;
+                context
+                    .read(bodyTextProvider)
+                    .state = value;
               },
             ),
             Row(
@@ -248,7 +252,7 @@ class DiaryCreate extends ConsumerWidget {
                     final uid = user.uid;
 
                     await FirebaseFirestore.instance
-                        /* Firestoreへpostする日記データ */
+                    /* Firestoreへpostする日記データ */
                         .collection('post')
                         .doc()
                         .set({
@@ -270,7 +274,7 @@ class DiaryCreate extends ConsumerWidget {
   }
 }
 
-// TODO: class DiaryDetailの作成
+
 class DiaryDetail extends ConsumerWidget {
   /* 日記内容 */
   @override
@@ -283,39 +287,108 @@ class DiaryDetail extends ConsumerWidget {
         title: Text('日記内容'),
         centerTitle: true,
       ),
-      body: Center(
-        child: Column(
-          children: <Widget>[
+      body: Column(
+        children: [
+          Expanded(
+            child: asyncPostsQuery.when(
+              /* 日記の読み込み状況による分岐 */
+
+              data: (QuerySnapshot query) {
+                /* 日記の読み込みに成功した場合 */
+                return ListView(
+                  children: query.docs.map((document) {
+                    return Card(
 
 
 
-            Container(
-              child: Text('投稿日時'),
-            ),
-            /* 投稿日時 */
 
-            Container(
-              /* タイトル */
-              child: Text('タイトル'),
+
+
+
+
+                      child: Column(
+                        children: <Widget>[
+
+
+                          Card(
+                            /* 投稿日時 */
+                            child: Text(document['postdate']),
+                            color: Colors.red,
+                          ),
+
+                          Card(
+                            /* タイトル */
+                            child: Text(document['titletext']),
+                            color: Colors.blue,
+                          ),
+
+                          Card(
+                            /* 本文 */
+                            child: Text(document['bodytext']),
+                            color: Colors.green,
+                          ),
+
+
+
+
+
+
+
+                        ],
+                      ),
+
+
+
+
+
+
+                    );
+
+
+
+
+
+
+
+
+
+
+                  }).toList(),
+                );
+              },
+
+
+
+
+
+
+              loading: () {
+                /* 日記読み込み中 */
+                return Center(
+                  child: Text('読込中...'),
+                );
+              },
+              error: (e, stackTrace) {
+                /* 日記読み込み失敗した場合 */
+                return Center(
+                  child: Text(e.toString()),
+                );
+              },
             ),
-            Container(
-              /* 内容 */
-              child: Text('内容'),
-            ),
-            Container(
-              /* 画像 */
-              child: Text('画像'),
-            ),
-            ElevatedButton(
-              child: Text('一覧に戻る'),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ],
-        ),
+
+          ),
+          ElevatedButton(
+            child: Text('一覧に戻る'),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ],
       ),
     );
   }
 }
+
+
+
 
 class DiaryList extends ConsumerWidget {
   /* 日記一覧 */
@@ -376,17 +449,17 @@ class DiaryList extends ConsumerWidget {
                         subtitle: Text(document['uid']),
 
                         trailing: document['email'] == user.email
-                            /* メールアドレスでユーザーの確認を行いTrueならば削除ボタンを表示する */
+                        /* メールアドレスでユーザーの確認を行いTrueならば削除ボタンを表示する */
                             ? IconButton(
-                                icon: Icon(Icons.delete),
-                                /* 投稿日記削除ボタン */
-                                onPressed: () async {
-                                  await FirebaseFirestore.instance
-                                      .collection('post')
-                                      .doc(document.id)
-                                      .delete();
-                                },
-                              )
+                          icon: Icon(Icons.delete),
+                          /* 投稿日記削除ボタン */
+                          onPressed: () async {
+                            await FirebaseFirestore.instance
+                                .collection('post')
+                                .doc(document.id)
+                                .delete();
+                          },
+                        )
                             : null, // Falseの場合は表示しない
                       ),
                     );
