@@ -274,7 +274,7 @@ class DiaryCreate extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
 
-                /* TODO:画像選択アイコンの作成 */
+
                 FloatingActionButton(
                   child: Icon(
                     Icons.photo_library
@@ -283,6 +283,10 @@ class DiaryCreate extends ConsumerWidget {
                   onPressed: null, // TODO:カメラロールにアクセスする
 
                 ),
+
+
+
+
 
                 ElevatedButton(
                   /* 投稿ボタン */
@@ -351,6 +355,29 @@ class DiaryCreate extends ConsumerWidget {
 
 
 // TODO: class DiaryDetailの作成
+class DiaryDetail extends ConsumerWidget {
+  /* 日記内容 */
+  @override
+  Widget build(BuildContext context, ScopedReader watch) {
+
+    final User user = watch(userProvider).state!;
+    final AsyncValue<QuerySnapshot> asyncPostsQuery = watch(postsQueryProvider);
+
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('日記内容'),
+        centerTitle: true,
+      ),
+
+
+    );
+
+
+
+  }
+
+}
 
 
 class DiaryList extends ConsumerWidget {
@@ -363,7 +390,7 @@ class DiaryList extends ConsumerWidget {
 
 
 
-
+     /* TODO:StreamBuilderを適用したい */
     return Scaffold(
       appBar: AppBar(
         title: Text('日記一覧'),
@@ -401,10 +428,30 @@ class DiaryList extends ConsumerWidget {
                     return Card(
 
 
+                      /* 日記の要約 */
+
+
                       child: ListTile(
-                        title: Text(document['titletext']),
+
+
+                        /* DiaryDetailへ遷移 */
+                        title: TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DiaryDetail(),
+                                ));
+                          },
+                          child: Text(
+                            document['titletext'],
+                            style: TextStyle(fontSize: 30),
+                          ),),
+
+
                         leading: Text(document['postdate']),
                         subtitle: Text(document['uid']),
+
 
 
 
@@ -422,8 +469,11 @@ class DiaryList extends ConsumerWidget {
                         )
                             : null, // Falseの場合は表示しない
                       ),
+
+
                     );
                   }).toList(),
+
                 );
               },
 
@@ -440,9 +490,15 @@ class DiaryList extends ConsumerWidget {
                   child: Text(e.toString()),
                 );
               },
+
             ),
 
+
           ),
+
+
+
+
         ],
       ),
 
