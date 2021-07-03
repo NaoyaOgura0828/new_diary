@@ -44,6 +44,7 @@ final titleTextProvider = StateProvider.autoDispose((ref) {
 
 
 final bodyTextProvider = StateProvider.autoDispose((ref) {
+  /* Providerで日記本文の受け渡し有効化 */
   return '';
 });
 
@@ -53,8 +54,8 @@ final bodyTextProvider = StateProvider.autoDispose((ref) {
 final postsQueryProvider = StreamProvider.autoDispose((ref) {
   /* 日記投稿時間の受け渡し有効化 */
   return FirebaseFirestore.instance
-      .collection('posts')
-      .orderBy('date')
+      .collection('post')
+      .orderBy('postdate')
       .snapshots();
 });
 
@@ -229,7 +230,8 @@ class DiaryCreate extends ConsumerWidget {
                 labelText: 'タイトル',
                 border: OutlineInputBorder(),
               ),
-              keyboardType: TextInputType.text,
+              keyboardType: TextInputType.multiline,
+              maxLines: null,
               style: TextStyle(fontSize: 20.0),
 
 
@@ -288,7 +290,33 @@ class DiaryCreate extends ConsumerWidget {
                   style: TextStyle(fontSize: 15.0),
                   ),
 
-                  onPressed: null, // TODO:DiaryListへ遷移と同時に投稿
+                  onPressed: () async {
+                    final postdate = DateTime.now().toLocal();
+                    final email = user.email;
+                    final uid = user.uid;
+
+
+                    await FirebaseFirestore.instance
+                        .collection('post')
+                        .doc()
+                        .set({
+                      'titletext': titletext,
+                      'bodytext': bodytext,
+                      'email': email,
+                      'postdate': postdate,
+                      'uid': uid,
+
+                    });
+
+
+
+
+
+
+
+
+
+                  }, // TODO:DiaryListへ遷移と同時に投稿
                 )
 
 
