@@ -228,9 +228,19 @@ class DiaryCreate extends ConsumerWidget {
               decoration: InputDecoration(
                 labelText: 'タイトル',
                 border: OutlineInputBorder(),
-                // TODO:内部処理の記述
-
               ),
+              keyboardType: TextInputType.text,
+              style: TextStyle(fontSize: 20.0),
+
+
+              /* Providerから日記タイトルを更新 */
+              onChanged: (String value) {
+                context.read(titleTextProvider).state = value;
+              },
+
+
+
+
             ),
 
 
@@ -242,10 +252,20 @@ class DiaryCreate extends ConsumerWidget {
               decoration: InputDecoration(
                 labelText: '内容',
                 border: OutlineInputBorder(),
-                // TODO:内部処理の記述
-
-
               ),
+
+              keyboardType: TextInputType.multiline,
+              maxLines: null,
+              style: TextStyle(fontSize: 20.0),
+
+
+              /* Providerから本文を更新 */
+              onChanged: (String value) {
+                context.read(bodyTextProvider).state = value;
+              },
+
+
+
             ),
 
             Row(
