@@ -285,18 +285,22 @@ class DiaryCreate extends ConsumerWidget {
                 ),
 
                 ElevatedButton(
+                  /* 投稿ボタン */
                   child: Text(
                     '投稿',
                   style: TextStyle(fontSize: 15.0),
                   ),
 
+
+
                   onPressed: () async {
-                    final postdate = DateTime.now().toLocal();
+                    final postdate = DateTime.now().toLocal().toString();
                     final email = user.email;
                     final uid = user.uid;
 
 
                     await FirebaseFirestore.instance
+                    /* Firestoreへpostする日記データ */
                         .collection('post')
                         .doc()
                         .set({
@@ -307,6 +311,7 @@ class DiaryCreate extends ConsumerWidget {
                       'uid': uid,
 
                     });
+                    Navigator.of(context).pop(); // 日記一覧画面へ戻る
 
 
 
@@ -316,7 +321,7 @@ class DiaryCreate extends ConsumerWidget {
 
 
 
-                  }, // TODO:DiaryListへ遷移と同時に投稿
+                  },
                 )
 
 
@@ -397,7 +402,8 @@ class DiaryList extends ConsumerWidget {
 
 
                       child: ListTile(
-                        title: Text(document['text']),
+                        title: Text(document['titletext']),
+                        leading: Text(document['postdate']),
                         subtitle: Text(document['uid']),
 
 
@@ -409,7 +415,7 @@ class DiaryList extends ConsumerWidget {
                           /* 投稿日記削除ボタン */
                           onPressed: () async {
                             await FirebaseFirestore.instance
-                                .collection('posts')
+                                .collection('post')
                                 .doc(document.id)
                                 .delete();
                           },
