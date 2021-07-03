@@ -48,7 +48,10 @@ final postsQueryProvider = StreamProvider.autoDispose((ref) {
       .snapshots();
 });
 
-// TODO:Providerで画像(URL?)の受け渡し有効化
+final imageUrlProvider = StateProvider.autoDispose((ref) {
+  /* 画像URLの受け渡し有効化 */
+  return '';
+});
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -72,7 +75,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
 /* TODO:新規登録失敗or認証失敗でのstack回避 */
 class Authy extends StatefulWidget {
   /* 認証機能 */
@@ -83,6 +85,7 @@ class Authy extends StatefulWidget {
 class _AuthyState extends State<Authy> {
   String email = ''; // メールアドレス
   String password = ''; // パスワード
+  String infotext = ''; // メッセージ表示
 
   @override
   Widget build(BuildContext context) {
@@ -109,52 +112,68 @@ class _AuthyState extends State<Authy> {
               TextFormField(
                 /* パスワードの入力フォーム */
                 decoration: InputDecoration(labelText: 'パスワード'),
+                obscureText: true, // パスワードを隠す
                 onChanged: (String value) {
                   setState(() {
                     password = value; // passwordにパスワードを代入
                   });
                 },
               ),
-              const SizedBox(height: 16.0),
+              Container(
+                child: Text(infotext),
+                padding: EdgeInsets.all(8.0),
+              ),
               Container(
                 /* ユーザー登録ボタン */
                 width: double.infinity,
                 child: ElevatedButton(
                   child: Text('ユーザー登録'),
                   onPressed: () async {
-                    final FirebaseAuth auth = FirebaseAuth.instance;
-                    await auth.createUserWithEmailAndPassword(
-                      /* emailとpasswordでユーザー登録する */
-                      email: email,
-                      password: password,
-                    );
+                    try {
+                      final FirebaseAuth auth = FirebaseAuth.instance;
+                      await auth.createUserWithEmailAndPassword(
+                        /* emailとpasswordでユーザー登録する */
+                        email: email,
+                        password: password,
+                      );
 
-                    await Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) {
-                        return DiaryList();
-                      }),
-                    );
+                      await Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (context) {
+                          return DiaryList();
+                        }),
+                      );
+                    } catch (e) {
+                      setState(() {
+                        infotext = '登録に失敗しました : ${e.toString()}';
+                      });
+                    }
                   },
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 8.0),
               Container(
                 /* ログインボタン */
                 width: double.infinity,
                 child: OutlinedButton(
                   child: Text('ログイン'),
                   onPressed: () async {
-                    final FirebaseAuth auth = FirebaseAuth.instance;
-                    await auth.signInWithEmailAndPassword(
-                      /* emailとpasswordでユーザー認証する */
-                      email: email,
-                      password: password,
-                    );
-                    await Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) {
-                        return DiaryList();
-                      }),
-                    );
+                    try {
+                      final FirebaseAuth auth = FirebaseAuth.instance;
+                      await auth.signInWithEmailAndPassword(
+                        /* emailとpasswordでユーザー認証する */
+                        email: email,
+                        password: password,
+                      );
+                      await Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (context) {
+                          return DiaryList();
+                        }),
+                      );
+                    } catch (e) {
+                      setState(() {
+                        infotext = 'ログインに失敗しました : ${e.toString()}';
+                      });
+                    }
                   },
                 ),
               )
@@ -166,20 +185,6 @@ class _AuthyState extends State<Authy> {
   }
 }
 
-class DiaryModel extends StatelessWidget {
-  /* 日記のモデル */
-  String titletext = ''; // タイトル
-  String bodytext = ''; // 本文
-  File? image; // 画像
-  String createtime = DateTime.now().toLocal().toIso8601String(); // 制作日
-  String uid = ''; // ユーザーID
-
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-}
-
 /* TODO: 画像をカメラロールから読み込めるようにする */
 class DiaryCreate extends ConsumerWidget {
   @override
@@ -188,6 +193,10 @@ class DiaryCreate extends ConsumerWidget {
     final user = watch(userProvider).state!;
     final titletext = watch(titleTextProvider).state;
     final bodytext = watch(bodyTextProvider).state;
+    final picker = ImagePicker();
+    File image;
+    final imageurl = watch(imageUrlProvider).state;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('日記作成'),
@@ -209,9 +218,7 @@ class DiaryCreate extends ConsumerWidget {
 
               /* Providerから日記タイトルを更新 */
               onChanged: (String value) {
-                context
-                    .read(titleTextProvider)
-                    .state = value;
+                context.read(titleTextProvider).state = value;
               },
             ),
             const SizedBox(
@@ -229,18 +236,26 @@ class DiaryCreate extends ConsumerWidget {
 
               /* Providerから本文を更新 */
               onChanged: (String value) {
-                context
-                    .read(bodyTextProvider)
-                    .state = value;
+                context.read(bodyTextProvider).state = value;
               },
+            ),
+            Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(width: 100, /*child: Image.file(image)*/), // TODO イメージファイル読み込み
+                  ),
+                ],
+              ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 FloatingActionButton(
                   child: Icon(Icons.photo_library),
-
-                  onPressed: null, // TODO:カメラロールにアクセスする
+                  onPressed: null,
                 ),
                 ElevatedButton(
                   /* 投稿ボタン */
@@ -254,7 +269,7 @@ class DiaryCreate extends ConsumerWidget {
                     final uid = user.uid;
 
                     await FirebaseFirestore.instance
-                    /* Firestoreへpostする日記データ */
+                        /* Firestoreへpostする日記データ */
                         .collection('post')
                         .doc()
                         .set({
@@ -263,6 +278,7 @@ class DiaryCreate extends ConsumerWidget {
                       'email': email,
                       'postdate': postdate,
                       'uid': uid,
+                      'imageurl': imageurl,
                     });
                     Navigator.of(context).pop(); // 日記一覧画面へ戻る
                   },
@@ -275,7 +291,6 @@ class DiaryCreate extends ConsumerWidget {
     );
   }
 }
-
 
 /* TODO:画像を読み込むようにする。レイアウトを整える */
 class DiaryDetail extends ConsumerWidget {
@@ -300,70 +315,41 @@ class DiaryDetail extends ConsumerWidget {
                 return ListView(
                   children: query.docs.map((document) {
                     return Card(
-
-
-
-
-
-
-
-
                       child: Column(
                         children: <Widget>[
-
-
                           Card(
                             /* 投稿日時 */
                             child: Text(document['postdate']),
                             color: Colors.red,
                           ),
-
                           Card(
                             /* タイトル */
                             child: Text(document['titletext']),
                             color: Colors.blue,
                           ),
-
                           Card(
                             /* 本文 */
                             child: Text(document['bodytext']),
                             color: Colors.green,
                           ),
+                          Card(
+                            /* 画像 */
+                            child: Stack(
+                              children: [
+                                Image.network(document['imageurl']),
+                              ],
+                            ),
 
-
-
-
-
-
-
+                            /*
+                            Ink.image(image: NetworkImage()),
+                            color: Colors.purple,*/
+                          ),
                         ],
                       ),
-
-
-
-
-
-
                     );
-
-
-
-
-
-
-
-
-
-
                   }).toList(),
                 );
               },
-
-
-
-
-
-
               loading: () {
                 /* 日記読み込み中 */
                 return Center(
@@ -377,7 +363,6 @@ class DiaryDetail extends ConsumerWidget {
                 );
               },
             ),
-
           ),
           ElevatedButton(
             child: Text('一覧に戻る'),
@@ -388,9 +373,6 @@ class DiaryDetail extends ConsumerWidget {
     );
   }
 }
-
-
-
 
 class DiaryList extends ConsumerWidget {
   /* 日記一覧 */
@@ -451,17 +433,17 @@ class DiaryList extends ConsumerWidget {
                         subtitle: Text(document['uid']),
 
                         trailing: document['email'] == user.email
-                        /* メールアドレスでユーザーの確認を行いTrueならば削除ボタンを表示する */
+                            /* メールアドレスでユーザーの確認を行いTrueならば削除ボタンを表示する */
                             ? IconButton(
-                          icon: Icon(Icons.delete),
-                          /* 投稿日記削除ボタン */
-                          onPressed: () async {
-                            await FirebaseFirestore.instance
-                                .collection('post')
-                                .doc(document.id)
-                                .delete();
-                          },
-                        )
+                                icon: Icon(Icons.delete),
+                                /* 投稿日記削除ボタン */
+                                onPressed: () async {
+                                  await FirebaseFirestore.instance
+                                      .collection('post')
+                                      .doc(document.id)
+                                      .delete();
+                                },
+                              )
                             : null, // Falseの場合は表示しない
                       ),
                     );
