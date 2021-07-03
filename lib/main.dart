@@ -35,10 +35,14 @@ final passwordProvider = StateProvider.autoDispose((ref) {
 });
 
 
-// TODO メッセージ⇒日記内容
-// メッセージの受け渡しを行うためのProvider
-// ※ autoDisposeを付けることで自動的に値をリセットできます
-final messageTextProvider = StateProvider.autoDispose((ref) {
+
+final titleTextProvider = StateProvider.autoDispose((ref) {
+  /* Providerで日記タイトルの受け渡し有効化 */
+  return '';
+});
+
+
+final bodyTextProvider = StateProvider.autoDispose((ref) {
   return '';
 });
 
@@ -52,6 +56,12 @@ final postsQueryProvider = StreamProvider.autoDispose((ref) {
       .orderBy('date')
       .snapshots();
 });
+
+
+
+// TODO:Providerで画像(URL?)の受け渡し有効化
+
+
 
 
 
@@ -195,6 +205,29 @@ class DiaryModel extends StatelessWidget {
 
 
 // TODO: class DiaryCreateの作成
+class DiaryCreate extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, ScopedReader watch) {
+    /* Providerから日記情報を受け取る */
+    final user = watch(userProvider).state!;
+    final titletext = watch(titleTextProvider).state;
+    final bodytext = watch(bodyTextProvider).state;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('日記作成'),
+      ),
+    );
+  }
+}
+
+
+
+
+
+
+
+
+
 
 
 // TODO: class DiaryDetailの作成
@@ -226,7 +259,7 @@ class DiaryList extends ConsumerWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => Authy(), //TODO:DiaryCreateとする
+                builder: (context) => DiaryCreate(), // DiaryCreateへ遷移
           ));
         },
       ),
