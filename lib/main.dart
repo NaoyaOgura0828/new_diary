@@ -1,4 +1,5 @@
 import 'package:firebase_analytics/observer.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -215,6 +216,24 @@ class DiaryCreate extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('日記作成'),
+        centerTitle: true,
+      ),
+
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(8.0),
+        child: Column(
+          children: <Widget>[
+            TextFormField(
+              decoration: InputDecoration(
+                labelText: 'タイトル',
+                border: OutlineInputBorder(),
+                // TODO:内部処理の記述
+
+              ),
+            )
+          ],
+        ),
+
       ),
     );
   }
