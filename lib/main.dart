@@ -248,6 +248,36 @@ class DiaryCreate extends ConsumerWidget {
               ),
             ),
 
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+
+                /* TODO:画像選択アイコンの作成 */
+                FloatingActionButton(
+                  child: Icon(
+                    Icons.photo_library
+                  ),
+
+                  onPressed: null, // TODO:カメラロールにアクセスする
+
+                ),
+
+                ElevatedButton(
+                  child: Text(
+                    '投稿',
+                  style: TextStyle(fontSize: 15.0),
+                  ),
+
+                  onPressed: null, // TODO:DiaryListへ遷移と同時に投稿
+                )
+
+
+
+
+
+              ],
+            )
+
 
           ],
         ),
