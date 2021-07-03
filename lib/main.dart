@@ -224,13 +224,31 @@ class DiaryCreate extends ConsumerWidget {
         child: Column(
           children: <Widget>[
             TextFormField(
+              /* タイトルフォーム */
               decoration: InputDecoration(
                 labelText: 'タイトル',
                 border: OutlineInputBorder(),
                 // TODO:内部処理の記述
 
               ),
-            )
+            ),
+
+
+            const SizedBox(height: 8.0,),
+
+
+            TextFormField(
+              /* 本文フォーム */
+              decoration: InputDecoration(
+                labelText: '内容',
+                border: OutlineInputBorder(),
+                // TODO:内部処理の記述
+
+
+              ),
+            ),
+
+
           ],
         ),
 
