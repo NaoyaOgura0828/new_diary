@@ -10,8 +10,47 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 
-final countProvider = StateProvider((ref) {
-  return 0;
+
+final userProvider = StateProvider((ref) {
+  /* Providerでユーザー情報の受け渡し有効化 */
+  return FirebaseAuth.instance.currentUser;
+});
+
+
+final infoTextProvider = StateProvider.autoDispose((ref) {
+  /* Providerでエラー情報の受け渡し有効化 */
+  return '';
+});
+
+
+final emailProvider = StateProvider.autoDispose((ref) {
+  /* Providerでメールアドレスの受け渡し有効化 */
+  return '';
+});
+
+
+final passwordProvider = StateProvider.autoDispose((ref) {
+  /* Providerでパスワードの受け渡し有効化 */
+  return '';
+});
+
+
+// TODO メッセージ⇒日記内容
+// メッセージの受け渡しを行うためのProvider
+// ※ autoDisposeを付けることで自動的に値をリセットできます
+final messageTextProvider = StateProvider.autoDispose((ref) {
+  return '';
+});
+
+
+
+
+final postsQueryProvider = StreamProvider.autoDispose((ref) {
+  /* 日記投稿時間の受け渡し有効化 */
+  return FirebaseFirestore.instance
+      .collection('posts')
+      .orderBy('date')
+      .snapshots();
 });
 
 
@@ -19,7 +58,11 @@ final countProvider = StateProvider((ref) {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(MyApp());
+  runApp(
+      ProviderScope( // Riverpodでのデータを受け渡し有効化
+        child: MyApp(),
+      ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -157,15 +200,17 @@ class DiaryModel extends StatelessWidget {
 // TODO: class DiaryDetailの作成
 
 
-class DiaryList extends StatefulWidget {
+class DiaryList extends ConsumerWidget {
   /* 日記一覧 */
    @override
-  _DiaryListState createState() => _DiaryListState();
-}
+   Widget build(BuildContext context, ScopedReader watch) {
 
-class _DiaryListState extends State<DiaryList> {
-  @override
-  Widget build(BuildContext context) {
+     final User user = watch(userProvider).state!;
+     final AsyncValue<QuerySnapshot> asyncPostsQuery = watch(postsQueryProvider);
+
+
+
+
     return Scaffold(
       appBar: AppBar(
         title: Text('日記一覧'),
@@ -181,25 +226,74 @@ class _DiaryListState extends State<DiaryList> {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => Authy(),
+                builder: (context) => Authy(), //TODO:DiaryCreateとする
           ));
         },
       ),
 
 
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(8.0),
-        child: Column(
-          children: <Widget>[
-            Container(
-        decoration: BoxDecoration(border: Border.all(
-        color: Colors.red,
-          width: 20.0,))
-            )
-          ],
-        ),
+      body: Column(
+        children: [
 
+          Expanded(
+
+            child: asyncPostsQuery.when(
+              /* 日記の読み込み状況による分岐 */
+
+
+              data: (QuerySnapshot query) {
+                /* 日記の読み込みに成功した場合 */
+                return ListView(
+                  children: query.docs.map((document) {
+                    return Card(
+
+
+                      child: ListTile(
+                        title: Text(document['text']),
+                        subtitle: Text(document['uid']),
+
+
+
+                        trailing: document['email'] == user.email
+                        /* メールアドレスでユーザーの確認を行いTrueならば削除ボタンを表示する */
+                            ? IconButton(
+                          icon: Icon(Icons.delete),
+                          /* 投稿日記削除ボタン */
+                          onPressed: () async {
+                            await FirebaseFirestore.instance
+                                .collection('posts')
+                                .doc(document.id)
+                                .delete();
+                          },
+                        )
+                            : null, // Falseの場合は表示しない
+                      ),
+                    );
+                  }).toList(),
+                );
+              },
+
+              loading: () {
+                /* 日記読み込み中 */
+                return Center(
+                  child: Text('読込中...'),
+                );
+              },
+
+              error: (e, stackTrace) {
+                /* 日記読み込み失敗した場合 */
+                return Center(
+                  child: Text(e.toString()),
+                );
+              },
+            ),
+
+          ),
+        ],
       ),
+
+
+
     );
   }
 }
