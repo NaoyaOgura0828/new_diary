@@ -225,37 +225,28 @@ class DiaryCreate extends StatefulHookWidget {
 class _DiaryCreateState extends State<DiaryCreate> {
 
 
-
-
-
-
-
-
-
-
-
-    /* Providerから日記情報を受け取る */
-    final user = useProvider(userProvider).state!;
-    final titletext = useProvider(titleTextProvider).state;
-    final bodytext = useProvider(bodyTextProvider).state;
-    final picker = ImagePicker();
-    File? _image;
-    final imageurl = useProvider(imageUrlProvider).state;
-    final postid = useProvider(postidProvider).state;
-
-
-    Future getImageFromGallery() async {
-      /* ギャラリーから画像を取得 */
-      final pickedFile = await picker.getImage(source: ImageSource.gallery);
-
-      setState(() {
-        _image = File(pickedFile!.path);
-      });
-    }
-
-
     @override
     Widget build(BuildContext context) {
+
+
+      /* Providerから日記情報を受け取る */
+      final user = useProvider(userProvider).state!;
+      final titletext = useProvider(titleTextProvider).state;
+      final bodytext = useProvider(bodyTextProvider).state;
+      final picker = ImagePicker();
+      File? _image;
+      final imageurl = useProvider(imageUrlProvider).state;
+      final postid = useProvider(postidProvider).state;
+
+
+      Future getImageFromGallery() async {
+        /* ギャラリーから画像を取得 */
+        final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+        setState(() {
+          _image = File(pickedFile!.path);
+        });
+      }
 
 
 
@@ -332,8 +323,8 @@ class _DiaryCreateState extends State<DiaryCreate> {
                   ),
                   onPressed: () async {
 
-                        Reference ref = storage.ref().child('postimage').child(_image!.path);
-                    TaskSnapshot snapshot = await ref.putFile(_image!);
+                        /*Reference ref = storage.ref().child('postimage').child(_image!.path);
+                    TaskSnapshot snapshot = await ref.putFile(_image!);*/
 
 
 
