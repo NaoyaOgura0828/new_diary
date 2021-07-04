@@ -7,8 +7,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:image_picker/image_picker.dart';
+
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 final userProvider = StateProvider((ref) {
   /* Providerでユーザー情報の受け渡し有効化 */
@@ -190,27 +193,41 @@ class _AuthyState extends State<Authy> {
   }
 }
 
-/* TODO: 画像をカメラロールから読み込めるようにする */
-class DiaryCreate extends ConsumerWidget {
+/* TODO:Firestoreに画像をStringで投げる */
+class DiaryCreate extends StatefulHookWidget {
+  /* 日記の作成 */
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
+  _DiaryCreateState createState() => _DiaryCreateState();
+}
+
+class _DiaryCreateState extends State<DiaryCreate> {
+
+
+
     /* Providerから日記情報を受け取る */
-    final user = watch(userProvider).state!;
-    final titletext = watch(titleTextProvider).state;
-    final bodytext = watch(bodyTextProvider).state;
+    final user = useProvider(userProvider).state!;
+    final titletext = useProvider(titleTextProvider).state;
+    final bodytext = useProvider(bodyTextProvider).state;
     final picker = ImagePicker();
     File? _image;
-    final imageurl = watch(imageUrlProvider).state;
+    final imageurl = useProvider(imageUrlProvider).state;
+
 
     Future getImageFromGallery() async {
       /* ギャラリーから画像を取得 */
       final pickedFile = await picker.getImage(source: ImageSource.gallery);
 
       setState(() {
-        // TODO classが"class DiaryCreate extends StatefulWidget"でないので"setState"が使えない
         _image = File(pickedFile!.path);
       });
     }
+
+
+    @override
+    Widget build(BuildContext context) {
+
+
+
 
     return Scaffold(
       appBar: AppBar(
@@ -264,7 +281,7 @@ class DiaryCreate extends ConsumerWidget {
                         width: 100,
                         child: _image == null
                             ? Text('写真を選んで下さい')
-                            : Image.file(_image!)), // TODO イメージファイル読み込み表示
+                            : Image.file(_image!)), // イメージファイル読み込み表示
                   ),
                 ],
               ),
@@ -274,7 +291,7 @@ class DiaryCreate extends ConsumerWidget {
               children: [
                 FloatingActionButton(
                   child: Icon(Icons.photo_library),
-                  onPressed: getImageFromGallery, // TODO カメラロールにアクセスする
+                  onPressed: getImageFromGallery, // カメラロールにアクセスする
                 ),
                 ElevatedButton(
                   /* 投稿ボタン */
@@ -288,8 +305,8 @@ class DiaryCreate extends ConsumerWidget {
                     final uid = user.uid;
 
                     await FirebaseFirestore.instance
-                        /* Firestoreへpostする日記データ */
-                        .collection('post')
+                    /* Firestoreへpostする日記データ */
+                        .collection('posts')
                         .doc()
                         .set({
                       'titletext': titletext,
