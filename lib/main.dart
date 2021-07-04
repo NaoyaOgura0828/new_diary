@@ -187,8 +187,6 @@ class _AuthyState extends State<Authy> {
 
 /* TODO: 画像をカメラロールから読み込めるようにする */
 class DiaryCreate extends ConsumerWidget {
-
-
   @override
   Widget build(BuildContext context, ScopedReader watch) {
     /* Providerから日記情報を受け取る */
@@ -203,7 +201,8 @@ class DiaryCreate extends ConsumerWidget {
       /* ギャラリーから画像を取得 */
       final pickedFile = await picker.getImage(source: ImageSource.gallery);
 
-      setState(() { // TODO classが"class DiaryCreate extends StatefulWidget"でないので"setState"が使えない
+      setState(() {
+        // TODO classが"class DiaryCreate extends StatefulWidget"でないので"setState"が使えない
         _image = File(pickedFile!.path);
       });
     }
@@ -256,7 +255,11 @@ class DiaryCreate extends ConsumerWidget {
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Container(width: 100, child: _image == null ? Text('写真を選んで下さい') : Image.file(_image!)), // TODO イメージファイル読み込み表示
+                    child: Container(
+                        width: 100,
+                        child: _image == null
+                            ? Text('写真を選んで下さい')
+                            : Image.file(_image!)), // TODO イメージファイル読み込み表示
                   ),
                 ],
               ),
