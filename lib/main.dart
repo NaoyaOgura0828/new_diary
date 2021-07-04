@@ -1,3 +1,6 @@
+
+
+
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
@@ -13,6 +16,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
+
+final storage = FirebaseStorage.instance;
+
+
+
 final userProvider = StateProvider((ref) {
   /* Providerでユーザー情報の受け渡し有効化 */
   return FirebaseAuth.instance.currentUser;
@@ -22,6 +30,14 @@ final infoTextProvider = StateProvider.autoDispose((ref) {
   /* Providerでエラー情報の受け渡し有効化 */
   return '';
 });
+
+
+final postidProvider = StateProvider.autoDispose((ref) {
+  /* Providerで投稿IDの受け渡し有効化 */
+  return '';
+});
+
+
 
 final emailProvider = StateProvider.autoDispose((ref) {
   /* Providerでメールアドレスの受け渡し有効化 */
@@ -193,6 +209,12 @@ class _AuthyState extends State<Authy> {
   }
 }
 
+
+
+
+
+
+
 /* TODO:Firestoreに画像をStringで投げる */
 class DiaryCreate extends StatefulHookWidget {
   /* 日記の作成 */
@@ -204,6 +226,14 @@ class _DiaryCreateState extends State<DiaryCreate> {
 
 
 
+
+
+
+
+
+
+
+
     /* Providerから日記情報を受け取る */
     final user = useProvider(userProvider).state!;
     final titletext = useProvider(titleTextProvider).state;
@@ -211,6 +241,7 @@ class _DiaryCreateState extends State<DiaryCreate> {
     final picker = ImagePicker();
     File? _image;
     final imageurl = useProvider(imageUrlProvider).state;
+    final postid = useProvider(postidProvider).state;
 
 
     Future getImageFromGallery() async {
@@ -300,6 +331,15 @@ class _DiaryCreateState extends State<DiaryCreate> {
                     style: TextStyle(fontSize: 15.0),
                   ),
                   onPressed: () async {
+
+                        Reference ref = storage.ref().child('postimage').child(_image!.path);
+                    TaskSnapshot snapshot = await ref.putFile(_image!);
+
+
+
+                    // TODO: ここにアップロード処理追加 uploadFile();
+
+
                     final postdate = DateTime.now().toLocal().toString();
                     final email = user.email;
                     final uid = user.uid;
@@ -315,6 +355,7 @@ class _DiaryCreateState extends State<DiaryCreate> {
                       'postdate': postdate,
                       'uid': uid,
                       'imageurl': imageurl,
+                      'postid': postid,
                     });
                     Navigator.of(context).pop(); // 日記一覧画面へ戻る
                   },
@@ -326,7 +367,37 @@ class _DiaryCreateState extends State<DiaryCreate> {
       ),
     );
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* TODO: 日記を選択した1枚だけ詳細表示する。レイアウトを整える */
 class DiaryDetail extends HookWidget {
@@ -342,6 +413,9 @@ class DiaryDetail extends HookWidget {
       ),
       body: Column(
         children: [
+
+
+
           Expanded(
             child: asyncPostsQuery.when(
               /* 日記の読み込み状況による分岐 */
@@ -399,7 +473,9 @@ class DiaryDetail extends HookWidget {
           ElevatedButton(
             child: Text('一覧に戻る'),
             onPressed: () => Navigator.of(context).pop(),
+
           ),
+
         ],
       ),
     );
@@ -501,5 +577,12 @@ class DiaryList extends ConsumerWidget {
     );
   }
 }
+
+
+
+
+
+
+
 
 
