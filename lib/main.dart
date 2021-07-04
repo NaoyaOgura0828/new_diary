@@ -12,7 +12,7 @@ import 'package:image_picker/image_picker.dart';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:uuid/uuid.dart';
 
 final storage = FirebaseStorage.instance;
 
@@ -312,6 +312,8 @@ class _DiaryCreateState extends State<DiaryCreate> {
                     final postdate = DateTime.now().toLocal().toString();
                     final email = user.email;
                     final uid = user.uid;
+                    final randomid = Uuid();
+                    var postid = randomid.v4();
 
                     await FirebaseFirestore.instance
                         /* Firestoreへpostする日記データ */
@@ -324,7 +326,7 @@ class _DiaryCreateState extends State<DiaryCreate> {
                       'postdate': postdate,
                       'uid': uid,
                       'imageurl': imageurl,
-                      'postid': postid,
+                      'postid': postid, // ランダム文字列をpostidとする
                     });
                     Navigator.of(context).pop(); // 日記一覧画面へ戻る
                   },
