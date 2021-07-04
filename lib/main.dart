@@ -383,7 +383,10 @@ class DiaryDetail extends HookWidget {
                             /* 画像 */
                             child: Stack(
                               children: [
+
+
                                 Image.network(document['imageurl']),
+
                               ],
                             ),
                           ),
