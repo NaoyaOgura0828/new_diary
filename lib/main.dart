@@ -65,6 +65,11 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+
+  /* TODO:ここにまとめてProviderへ投げるものを記述して、以下ではConsumerWidgetは使用しない？  */
+
+
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -75,7 +80,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-/* TODO:新規登録失敗or認証失敗でのstack回避 */
+
 class Authy extends StatefulWidget {
   /* 認証機能 */
   @override
