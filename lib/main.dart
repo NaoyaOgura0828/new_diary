@@ -1,6 +1,3 @@
-
-
-
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
@@ -16,10 +13,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-
 final storage = FirebaseStorage.instance;
-
-
 
 final userProvider = StateProvider((ref) {
   /* Providerでユーザー情報の受け渡し有効化 */
@@ -31,13 +25,10 @@ final infoTextProvider = StateProvider.autoDispose((ref) {
   return '';
 });
 
-
 final postidProvider = StateProvider.autoDispose((ref) {
   /* Providerで投稿IDの受け渡し有効化 */
   return '';
 });
-
-
 
 final emailProvider = StateProvider.autoDispose((ref) {
   /* Providerでメールアドレスの受け渡し有効化 */
@@ -84,10 +75,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-
   /* TODO:ここにまとめてProviderへ投げるものを記述して、以下ではConsumerWidgetは使用しない？  */
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +86,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
 
 class Authy extends StatefulWidget {
   /* 認証機能 */
@@ -209,12 +196,6 @@ class _AuthyState extends State<Authy> {
   }
 }
 
-
-
-
-
-
-
 /* TODO:Firestoreに画像をStringで投げる */
 class DiaryCreate extends StatefulHookWidget {
   /* 日記の作成 */
@@ -223,33 +204,28 @@ class DiaryCreate extends StatefulHookWidget {
 }
 
 class _DiaryCreateState extends State<DiaryCreate> {
+  /* Providerから日記情報を受け取る */
 
+  final picker = ImagePicker();
 
-    @override
-    Widget build(BuildContext context) {
+  File? _imageraw;
 
+  Future getImageFromGallery() async {
+    /* ギャラリーから画像を取得 */
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
 
-      /* Providerから日記情報を受け取る */
-      final user = useProvider(userProvider).state!;
-      final titletext = useProvider(titleTextProvider).state;
-      final bodytext = useProvider(bodyTextProvider).state;
-      final picker = ImagePicker();
-      File? _image;
-      final imageurl = useProvider(imageUrlProvider).state;
-      final postid = useProvider(postidProvider).state;
+    setState(() {
+      _imageraw = File(pickedFile!.path);
+    });
+  }
 
-
-      Future getImageFromGallery() async {
-        /* ギャラリーから画像を取得 */
-        final pickedFile = await picker.getImage(source: ImageSource.gallery);
-
-        setState(() {
-          _image = File(pickedFile!.path);
-        });
-      }
-
-
-
+  @override
+  Widget build(BuildContext context) {
+    final user = useProvider(userProvider).state!;
+    final titletext = useProvider(titleTextProvider).state;
+    final bodytext = useProvider(bodyTextProvider).state;
+    final imageurl = useProvider(imageUrlProvider).state;
+    final postid = useProvider(postidProvider).state;
 
     return Scaffold(
       appBar: AppBar(
@@ -301,9 +277,9 @@ class _DiaryCreateState extends State<DiaryCreate> {
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
                         width: 100,
-                        child: _image == null
+                        child: _imageraw == null
                             ? Text('写真を選んで下さい')
-                            : Image.file(_image!)), // イメージファイル読み込み表示
+                            : Image.file(_imageraw!)), // イメージファイル読み込み表示
                   ),
                 ],
               ),
@@ -322,21 +298,17 @@ class _DiaryCreateState extends State<DiaryCreate> {
                     style: TextStyle(fontSize: 15.0),
                   ),
                   onPressed: () async {
-
-                        /*Reference ref = storage.ref().child('postimage').child(_image!.path);
+                    /*Reference ref = storage.ref().child('postimage').child(_image!.path);
                     TaskSnapshot snapshot = await ref.putFile(_image!);*/
 
-
-
                     // TODO: ここにアップロード処理追加 uploadFile();
-
 
                     final postdate = DateTime.now().toLocal().toString();
                     final email = user.email;
                     final uid = user.uid;
 
                     await FirebaseFirestore.instance
-                    /* Firestoreへpostする日記データ */
+                        /* Firestoreへpostする日記データ */
                         .collection('posts')
                         .doc()
                         .set({
@@ -358,44 +330,15 @@ class _DiaryCreateState extends State<DiaryCreate> {
       ),
     );
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /* TODO: 日記を選択した1枚だけ詳細表示する。レイアウトを整える */
 class DiaryDetail extends HookWidget {
   /* 日記内容 */
   @override
   Widget build(BuildContext context) {
-    final AsyncValue<QuerySnapshot> asyncPostsQuery = useProvider(postsQueryProvider);
+    final AsyncValue<QuerySnapshot> asyncPostsQuery =
+        useProvider(postsQueryProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -404,9 +347,6 @@ class DiaryDetail extends HookWidget {
       ),
       body: Column(
         children: [
-
-
-
           Expanded(
             child: asyncPostsQuery.when(
               /* 日記の読み込み状況による分岐 */
@@ -464,21 +404,22 @@ class DiaryDetail extends HookWidget {
           ElevatedButton(
             child: Text('一覧に戻る'),
             onPressed: () => Navigator.of(context).pop(),
-
           ),
-
         ],
       ),
     );
   }
 }
 
-class DiaryList extends ConsumerWidget {
+class DiaryList extends HookWidget {
   /* 日記一覧 */
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
-    final User user = watch(userProvider).state!;
-    final AsyncValue<QuerySnapshot> asyncPostsQuery = watch(postsQueryProvider);
+  Widget build(
+    BuildContext context,
+  ) {
+    final User user = useProvider(userProvider).state!;
+    final AsyncValue<QuerySnapshot> asyncPostsQuery =
+        useProvider(postsQueryProvider);
 
     /* TODO:StreamBuilderを適用したい */
     return Scaffold(
@@ -568,12 +509,3 @@ class DiaryList extends ConsumerWidget {
     );
   }
 }
-
-
-
-
-
-
-
-
-
