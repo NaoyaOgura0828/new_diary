@@ -328,12 +328,12 @@ class _DiaryCreateState extends State<DiaryCreate> {
   }
 }
 
-/* TODO:画像を読み込むようにする。レイアウトを整える */
-class DiaryDetail extends ConsumerWidget {
+/* TODO: 日記を選択した1枚だけ詳細表示する。レイアウトを整える */
+class DiaryDetail extends HookWidget {
   /* 日記内容 */
   @override
-  Widget build(BuildContext context, ScopedReader watch) {
-    final AsyncValue<QuerySnapshot> asyncPostsQuery = watch(postsQueryProvider);
+  Widget build(BuildContext context) {
+    final AsyncValue<QuerySnapshot> asyncPostsQuery = useProvider(postsQueryProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -375,10 +375,6 @@ class DiaryDetail extends ConsumerWidget {
                                 Image.network(document['imageurl']),
                               ],
                             ),
-
-                            /*
-                            Ink.image(image: NetworkImage()),
-                            color: Colors.purple,*/
                           ),
                         ],
                       ),
@@ -505,4 +501,5 @@ class DiaryList extends ConsumerWidget {
     );
   }
 }
-/* デプロイテスト */
+
+
