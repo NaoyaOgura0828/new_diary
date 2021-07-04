@@ -12,8 +12,11 @@ import 'package:image_picker/image_picker.dart';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 final storage = FirebaseStorage.instance;
+
+final storageRef = storage.ref();
 
 final userProvider = StateProvider((ref) {
   /* Providerでユーザー情報の受け渡し有効化 */
@@ -298,9 +301,13 @@ class _DiaryCreateState extends State<DiaryCreate> {
                     style: TextStyle(fontSize: 15.0),
                   ),
                   onPressed: () async {
+                    /* Firebase Storageへ投稿 */
                     Reference ref =
                         storage.ref().child('postimage').child(_imageraw!.path);
                     TaskSnapshot snapshot = await ref.putFile(_imageraw!);
+
+                    final postimageurl = await snapshot.ref.getDownloadURL();
+                    var imageurl = postimageurl.toString();
 
                     final postdate = DateTime.now().toLocal().toString();
                     final email = user.email;
@@ -412,6 +419,7 @@ class DiaryDetail extends HookWidget {
 
 class DiaryList extends HookWidget {
   /* 日記一覧 */
+
   @override
   Widget build(
     BuildContext context,

@@ -38,6 +38,7 @@ dependencies:
   flutter_hooks: ^0.17.0
   hooks_riverpod: ^0.14.0+4
   state_notifier: ^0.7.0
+  cached_network_image: ^3.0.0
 
 
 dev_dependencies:
