@@ -309,7 +309,7 @@ class _DiaryCreateState extends State<DiaryCreate> {
 
                     await FirebaseFirestore.instance
                         /* Firestoreへpostする日記データ */
-                        .collection('posts')
+                        .collection('post')
                         .doc()
                         .set({
                       'titletext': titletext,
