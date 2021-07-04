@@ -298,10 +298,9 @@ class _DiaryCreateState extends State<DiaryCreate> {
                     style: TextStyle(fontSize: 15.0),
                   ),
                   onPressed: () async {
-                    /*Reference ref = storage.ref().child('postimage').child(_image!.path);
-                    TaskSnapshot snapshot = await ref.putFile(_image!);*/
-
-                    // TODO: ここにアップロード処理追加 uploadFile();
+                    Reference ref =
+                        storage.ref().child('postimage').child(_imageraw!.path);
+                    TaskSnapshot snapshot = await ref.putFile(_imageraw!);
 
                     final postdate = DateTime.now().toLocal().toString();
                     final email = user.email;
@@ -421,7 +420,6 @@ class DiaryList extends HookWidget {
     final AsyncValue<QuerySnapshot> asyncPostsQuery =
         useProvider(postsQueryProvider);
 
-    /* TODO:StreamBuilderを適用したい */
     return Scaffold(
       appBar: AppBar(
         title: Text('日記一覧'),
