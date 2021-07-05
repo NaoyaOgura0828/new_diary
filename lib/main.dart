@@ -348,17 +348,29 @@ class _DiaryCreateState extends State<DiaryCreate> {
 /* TODO: 日記を選択した1枚だけ詳細表示する。レイアウトを整える */
 class DiaryDetail extends HookWidget {
   /* 日記内容 */
+  DiaryDetail(this.item);
+  final item;
+
   @override
   Widget build(BuildContext context) {
     final AsyncValue<QuerySnapshot> asyncPostsQuery =
         useProvider(postsQueryProvider);
+
+    var itemdata = item.data();
 
     return Scaffold(
       appBar: AppBar(
         title: Text('日記内容'),
         centerTitle: true,
       ),
-      body: Column(
+      body: Text(itemdata['titletext'])
+
+
+
+
+
+
+      /*Column(
         children: [
           Expanded(
             child: asyncPostsQuery.when(
@@ -422,7 +434,7 @@ class DiaryDetail extends HookWidget {
             onPressed: () => Navigator.of(context).pop(),
           ),
         ],
-      ),
+      ),*/
     );
   }
 }
@@ -498,6 +510,7 @@ class DiaryList extends HookWidget {
 
 
                             /* TODO: Firestoreからdocumentのidを取得 */
+                            var item =
                             await FirebaseFirestore.instance
                                 .collection('post')
                                 .doc(document.id).get()/*.then((value) => postdoclist.add(document.id))*/;
@@ -507,7 +520,7 @@ class DiaryList extends HookWidget {
                             Navigator.of(
                                 context).push(
                                 MaterialPageRoute(
-                                builder: (context) => DiaryDetail()
+                                builder: (context) => DiaryDetail(item)
                             ));
                             
 
