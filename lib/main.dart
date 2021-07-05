@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -78,8 +77,6 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  /* TODO:ここにまとめてProviderへ投げるものを記述して、以下ではConsumerWidgetは使用しない？  */
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -199,7 +196,6 @@ class _AuthyState extends State<Authy> {
   }
 }
 
-/* TODO:Firestoreに画像をStringで投げる */
 class DiaryCreate extends StatefulHookWidget {
   /* 日記の作成 */
 
@@ -228,9 +224,6 @@ class _DiaryCreateState extends State<DiaryCreate> {
     final user = useProvider(userProvider).state!;
     final titletext = useProvider(titleTextProvider).state;
     final bodytext = useProvider(bodyTextProvider).state;
-    final imageurl = useProvider(imageUrlProvider).state;
-    final postid = useProvider(postidProvider).state;
-
 
     return Scaffold(
       appBar: AppBar(
@@ -283,7 +276,7 @@ class _DiaryCreateState extends State<DiaryCreate> {
                     child: Container(
                         width: 100,
                         child: _imageraw == null
-                            ? Text('写真を選んで下さい')
+                            ? Image.asset('assets/images/image_choice.png') // 画像未選択だと表示されるデフォルト画像
                             : Image.file(_imageraw!)), // イメージファイル読み込み表示
                   ),
                 ],
@@ -315,11 +308,8 @@ class _DiaryCreateState extends State<DiaryCreate> {
                     final email = user.email;
                     final uid = user.uid;
 
-
                     final randomid = Uuid();
                     var postid = randomid.v4();
-
-
 
                     await FirebaseFirestore.instance
                         /* Firestoreへpostする日記データ */
@@ -346,192 +336,97 @@ class _DiaryCreateState extends State<DiaryCreate> {
   }
 }
 
-/* TODO: 日記を選択した1枚だけ詳細表示する。レイアウトを整える */
 class DiaryDetail extends HookWidget {
   /* 日記内容 */
   DiaryDetail(this.item);
+
   final item;
 
   @override
   Widget build(BuildContext context) {
-    final AsyncValue<QuerySnapshot> asyncPostsQuery =
-        useProvider(postsQueryProvider);
-
-    var itemdata = item.data();
+    var diarydata = item.data(); //
 
     return Scaffold(
       appBar: AppBar(
         title: Text('日記内容'),
         centerTitle: true,
       ),
-
-      /*body: Text(itemdata['titletext'])*/
       body: SingleChildScrollView(
         padding: EdgeInsets.all(8.0),
         child: Center(
-        child: Column(
-          children: <Widget>[
-
-            const SizedBox(
-              height: 8.0,
-            ),
-
-            /* 投稿日時 */
-            Container(
-              decoration: BoxDecoration(
-                border: const Border(
-                  bottom: const BorderSide(
-                    color: Colors.blue,
-                    width: 3.0
-                  )
-                )
+          child: Column(
+            children: <Widget>[
+              const SizedBox(
+                height: 8.0,
               ),
 
-
-
-              child: Text(itemdata['postdate']),
-            ),
-
-            const SizedBox(
-              height: 8.0,
-            ),
-
-            /* タイトル */
-            Container(
-              decoration: BoxDecoration(
-                  border: const Border(
-                      bottom: const BorderSide(
-                          color: Colors.blue,
-                          width: 3.0
-                      )
-                  )
+              /* 投稿日時 */
+              Container(
+                decoration: BoxDecoration(
+                    border: const Border(
+                        bottom:
+                            const BorderSide(color: Colors.blue, width: 3.0))),
+                child: Text(
+                  diarydata['postdate'],
+                  style: TextStyle(fontSize: 20.0),
+                ),
+              ),
+              const SizedBox(
+                height: 8.0,
               ),
 
-
-
-
-              child: Text(itemdata['titletext']),
-            ),
-
-            const SizedBox(
-              height: 8.0,
-            ),
-
-            /* 本文 */
-            Container(
-              decoration: BoxDecoration(
-                  border: const Border(
-                      bottom: const BorderSide(
-                          color: Colors.blue,
-                          width: 3.0
-                      )
-                  )
+              /* タイトル */
+              Container(
+                decoration: BoxDecoration(
+                    border: const Border(
+                        bottom:
+                            const BorderSide(color: Colors.blue, width: 3.0))),
+                child: Text(
+                  diarydata['titletext'],
+                  style: TextStyle(fontSize: 20.0),
+                ),
+              ),
+              const SizedBox(
+                height: 8.0,
               ),
 
-
-
-
-              child: Text(itemdata['bodytext']),
-            ),
-
-            const SizedBox(
-              height: 8.0,
-            ),
-
-            /* 画像 */
-            Container(
-              child: Image.network(itemdata['imageurl']),
-            ),
-
-            const SizedBox(
-              height: 8.0,
-            ),
-
-            /* 日記一覧画面への遷移ボタン */
-            Container(
-              child: ElevatedButton(
-                child: Text('一覧に戻る'),
-                onPressed: () => Navigator.of(context).pop(),
+              /* 本文 */
+              Container(
+                decoration: BoxDecoration(
+                    border: const Border(
+                        bottom:
+                            const BorderSide(color: Colors.blue, width: 3.0))),
+                child: Text(
+                  diarydata['bodytext'],
+                  style: TextStyle(fontSize: 20.0),
+                ),
               ),
-            )
+              const SizedBox(
+                height: 8.0,
+              ),
 
+              /* 画像 */
+              Container(
+                child: Image.network(diarydata['imageurl']),
+              ),
+              const SizedBox(
+                height: 8.0,
+              ),
 
-          ],
-        ),
+              /* 日記一覧画面への遷移ボタン */
+              Container(
+                child: ElevatedButton(
+                  child: Text(
+                    '一覧に戻る',
+                    style: TextStyle(fontSize: 20.0),
+                  ),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              )
+            ],
+          ),
         ),
       ),
-
-
-
-
-
-      /*Column(
-        children: [
-          Expanded(
-            child: asyncPostsQuery.when(
-              /* 日記の読み込み状況による分岐 */
-
-              data: (QuerySnapshot query) {
-                /* 日記の読み込みに成功した場合 */
-                return ListView(
-                  children: query.docs.map((document) {
-                    return Card(
-                      child: Column(
-                        children: <Widget>[
-                          Card(
-                            /* 投稿日時 */
-                            child: Text(document['postdate']),
-                            color: Colors.red,
-                          ),
-                          Card(
-                            /* タイトル */
-                            child: Text(document['titletext']),
-                            color: Colors.blue,
-                          ),
-                          Card(
-                            /* 本文 */
-                            child: Text(document['bodytext']),
-                            color: Colors.green,
-                          ),
-                          Card(
-                            /* 画像 */
-                            child: Stack(
-                              children: [
-
-
-                                Image.network(document['imageurl']),
-
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                );
-              },
-              loading: () {
-                /* 日記読み込み中 */
-                return Center(
-                  child: Text('読込中...'),
-                );
-              },
-              error: (e, stackTrace) {
-                /* 日記読み込み失敗した場合 */
-                return Center(
-                  child: Text(e.toString()),
-                );
-              },
-            ),
-          ),
-          ElevatedButton(
-            child: Text('一覧に戻る'),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ],
-      ),*/
-
-
     );
   }
 }
@@ -547,7 +442,6 @@ class DiaryList extends HookWidget {
     final AsyncValue<QuerySnapshot> asyncPostsQuery =
         useProvider(postsQueryProvider);
 
-
     return Scaffold(
       appBar: AppBar(
         title: Text('日記一覧'),
@@ -562,15 +456,8 @@ class DiaryList extends HookWidget {
           Navigator.push(
               context,
               MaterialPageRoute(
-
-
                 builder: (context) => DiaryCreate(), // DiaryCreateへ遷移
-              )
-
-
-
-
-          );
+              ));
         },
       ),
       body: Column(
@@ -590,44 +477,15 @@ class DiaryList extends HookWidget {
                         /* DiaryDetailへ遷移 */
                         title: TextButton(
                           onPressed: () async {
-
-
-
-                            /* TODO: postdoclistにdocument.idを代入して画面遷移時に呼び出したい */
-                            /*List postdoclist = [];*/
-
-
-
-                            /* TODO: 旧コードコメントアウト */
-                            /*Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => DiaryDetail(),
-                                ));*/
-
-
-                            /* TODO: Firestoreからdocumentのidを取得 */
-                            var item =
-                            await FirebaseFirestore.instance
+                            /* Firestoreからdocumentのidを取得 */
+                            var item = await FirebaseFirestore.instance
                                 .collection('post')
-                                .doc(document.id).get()/*.then((value) => postdoclist.add(document.id))*/;
+                                .doc(document.id)
+                                .get() /*.then((value) => postdoclist.add(document.id))*/;
 
-
-                                /* TODO: 実際に画面遷移する為の処理 */
-                            Navigator.of(
-                                context).push(
-                                MaterialPageRoute(
-                                builder: (context) => DiaryDetail(item)
-                            ));
-                            
-
-
-
-
-
-
-
-
+                            /* 実際に画面遷移する為の処理 */
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => DiaryDetail(item)));
                           },
                           child: Text(
                             document['titletext'],
