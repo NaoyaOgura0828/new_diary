@@ -105,7 +105,7 @@ class _AuthyState extends State<Authy> {
         title: Text('日記投稿アプリ'),
         centerTitle: true,
       ),
-      body: Container(
+      body: SingleChildScrollView(
         padding: EdgeInsets.all(24.0),
         child: Center(
           child: Column(
