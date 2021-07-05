@@ -363,8 +363,44 @@ class DiaryDetail extends HookWidget {
         title: Text('日記内容'),
         centerTitle: true,
       ),
-      body: Text(itemdata['titletext'])
 
+      /*body: Text(itemdata['titletext'])*/
+      body: SingleChildScrollView(
+        child: Center(
+        child: Column(
+          children: <Widget>[
+            /* 投稿日時 */
+            Container(
+              child: Text(itemdata['postdate']),
+            ),
+
+            /* タイトル */
+            Container(
+              child: Text(itemdata['titletext']),
+            ),
+
+            /* 本文 */
+            Container(
+              child: Text(itemdata['bodytext']),
+            ),
+
+            /* 画像 */
+            Container(
+              child: Image.network(itemdata['imageurl']),
+            ),
+
+            Container(
+              child: ElevatedButton(
+                child: Text('一覧に戻る'),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            )
+
+
+          ],
+        ),
+        ),
+      ),
 
 
 
@@ -435,6 +471,8 @@ class DiaryDetail extends HookWidget {
           ),
         ],
       ),*/
+
+
     );
   }
 }
