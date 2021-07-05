@@ -530,6 +530,26 @@ class DiaryList extends HookWidget {
           ),
         ],
       ),
+      bottomNavigationBar: BottomAppBar(
+        child: ElevatedButton(
+          child: Text('ログアウト'),
+          onPressed: null,
+        ),
+              ),
+
+
+
+
+      /*bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.logout),
+            label: 'ログアウト',
+          )
+        ],
+      ),*/
+
+
     );
   }
 }
