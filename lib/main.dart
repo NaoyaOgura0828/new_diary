@@ -276,7 +276,8 @@ class _DiaryCreateState extends State<DiaryCreate> {
                     child: Container(
                         width: 100,
                         child: _imageraw == null
-                            ? Image.asset('assets/images/image_choice.png') // 画像未選択だと表示されるデフォルト画像
+                            ? Image.asset(
+                                'assets/images/image_choice.png') // 画像未選択だと表示されるデフォルト画像
                             : Image.file(_imageraw!)), // イメージファイル読み込み表示
                   ),
                 ],
@@ -442,6 +443,10 @@ class DiaryList extends HookWidget {
     final AsyncValue<QuerySnapshot> asyncPostsQuery =
         useProvider(postsQueryProvider);
 
+    Future<void> _signOut() async {
+      await FirebaseAuth.instance.signOut();
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text('日記一覧'),
@@ -532,24 +537,17 @@ class DiaryList extends HookWidget {
       ),
       bottomNavigationBar: BottomAppBar(
         child: ElevatedButton(
-          child: Text('ログアウト'),
-          onPressed: null,
-        ),
-              ),
-
-
-
-
-      /*bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.logout),
-            label: 'ログアウト',
-          )
-        ],
-      ),*/
-
-
+            /* ログアウトボタン */
+            style: ElevatedButton.styleFrom(primary: Colors.red),
+            child: Text('ログアウト'),
+            onPressed: () {
+              _signOut();
+              Navigator.of(context)
+                  .pushReplacement(MaterialPageRoute(builder: (context) {
+                return Authy();
+              }));
+            }),
+      ),
     );
   }
 }
