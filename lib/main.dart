@@ -1,4 +1,3 @@
-import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -202,6 +201,7 @@ class _AuthyState extends State<Authy> {
 /* TODO:Firestoreに画像をStringで投げる */
 class DiaryCreate extends StatefulHookWidget {
   /* 日記の作成 */
+
   @override
   _DiaryCreateState createState() => _DiaryCreateState();
 }
@@ -229,6 +229,7 @@ class _DiaryCreateState extends State<DiaryCreate> {
     final bodytext = useProvider(bodyTextProvider).state;
     final imageurl = useProvider(imageUrlProvider).state;
     final postid = useProvider(postidProvider).state;
+
 
     return Scaffold(
       appBar: AppBar(
@@ -312,8 +313,12 @@ class _DiaryCreateState extends State<DiaryCreate> {
                     final postdate = DateTime.now().toLocal().toString();
                     final email = user.email;
                     final uid = user.uid;
+
+
                     final randomid = Uuid();
                     var postid = randomid.v4();
+
+
 
                     await FirebaseFirestore.instance
                         /* Firestoreへpostする日記データ */
@@ -433,6 +438,7 @@ class DiaryList extends HookWidget {
     final AsyncValue<QuerySnapshot> asyncPostsQuery =
         useProvider(postsQueryProvider);
 
+
     return Scaffold(
       appBar: AppBar(
         title: Text('日記一覧'),
@@ -447,8 +453,15 @@ class DiaryList extends HookWidget {
           Navigator.push(
               context,
               MaterialPageRoute(
+
+
                 builder: (context) => DiaryCreate(), // DiaryCreateへ遷移
-              ));
+              )
+
+
+
+
+          );
         },
       ),
       body: Column(
@@ -467,12 +480,44 @@ class DiaryList extends HookWidget {
                       child: ListTile(
                         /* DiaryDetailへ遷移 */
                         title: TextButton(
-                          onPressed: () {
-                            Navigator.push(
+                          onPressed: () async {
+
+
+
+                            /* TODO: postdoclistにdocument.idを代入して画面遷移時に呼び出したい */
+                            /*List postdoclist = [];*/
+
+
+
+                            /* TODO: 旧コードコメントアウト */
+                            /*Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => DiaryDetail(),
-                                ));
+                                ));*/
+
+
+                            /* TODO: Firestoreからdocumentのidを取得 */
+                            await FirebaseFirestore.instance
+                                .collection('post')
+                                .doc(document.id).get()/*.then((value) => postdoclist.add(document.id))*/;
+
+
+                                /* TODO: 実際に画面遷移する為の処理 */
+                            Navigator.of(
+                                context).push(
+                                MaterialPageRoute(
+                                builder: (context) => DiaryDetail()
+                            ));
+                            
+
+
+
+
+
+
+
+
                           },
                           child: Text(
                             document['titletext'],
