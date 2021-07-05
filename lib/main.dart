@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -366,22 +367,75 @@ class DiaryDetail extends HookWidget {
 
       /*body: Text(itemdata['titletext'])*/
       body: SingleChildScrollView(
+        padding: EdgeInsets.all(8.0),
         child: Center(
         child: Column(
           children: <Widget>[
+
+            const SizedBox(
+              height: 8.0,
+            ),
+
             /* 投稿日時 */
             Container(
+              decoration: BoxDecoration(
+                border: const Border(
+                  bottom: const BorderSide(
+                    color: Colors.blue,
+                    width: 3.0
+                  )
+                )
+              ),
+
+
+
               child: Text(itemdata['postdate']),
+            ),
+
+            const SizedBox(
+              height: 8.0,
             ),
 
             /* タイトル */
             Container(
+              decoration: BoxDecoration(
+                  border: const Border(
+                      bottom: const BorderSide(
+                          color: Colors.blue,
+                          width: 3.0
+                      )
+                  )
+              ),
+
+
+
+
               child: Text(itemdata['titletext']),
+            ),
+
+            const SizedBox(
+              height: 8.0,
             ),
 
             /* 本文 */
             Container(
+              decoration: BoxDecoration(
+                  border: const Border(
+                      bottom: const BorderSide(
+                          color: Colors.blue,
+                          width: 3.0
+                      )
+                  )
+              ),
+
+
+
+
               child: Text(itemdata['bodytext']),
+            ),
+
+            const SizedBox(
+              height: 8.0,
             ),
 
             /* 画像 */
@@ -389,6 +443,11 @@ class DiaryDetail extends HookWidget {
               child: Image.network(itemdata['imageurl']),
             ),
 
+            const SizedBox(
+              height: 8.0,
+            ),
+
+            /* 日記一覧画面への遷移ボタン */
             Container(
               child: ElevatedButton(
                 child: Text('一覧に戻る'),
